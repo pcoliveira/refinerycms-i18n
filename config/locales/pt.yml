@@ -1,8 +1,7 @@
 # European Portuguese translations for Ruby on Rails
 #
 #
-
-"pt-PT":
+pt:
   # formatos de data e hora
   date:
     formats:      

@@ -14,6 +14,7 @@ module Refinery
           :en => 'English',
           :fr => 'Français',
           :nl => 'Nederlands',
+          :pt => 'Português',
           :'pt-BR' => 'Português',
           :da => 'Dansk',
           :nb => 'Norsk Bokmål',
