@@ -1,31 +1,21 @@
 module RoutingFilter
   class RefineryLocales < Filter
 
-    @@include_default_locale = true
-    cattr_writer :include_default_locale
-
-    class << self
-      def include_default_locale?
-        @@include_default_locale
-      end
-
-      def locales
-        @@locales ||= I18n.available_locales.map(&:to_sym)
-      end
-
-      def locales=(locales)
-        @@locales = locales.map(&:to_sym)
-      end
-
-      def locales_pattern
-        @@locales_pattern ||= %r(^/(#{self.locales.map { |l| Regexp.escape(l.to_s) }.join('|')})(?=/|$))
-      end
-    end
-
     def around_recognize(path, env, &block)
-       locale = extract_segment!(self.class.locales_pattern, path) # remove the locale from the beginning of the path
-      yield.tap do |params|                                       # invoke the given block (calls more filters and finally routing)
-        params[:locale] = locale if locale                        # set recognized locale to the resulting params hash
+      if ::Refinery::I18n.url_filter_enabled?
+        if path =~ %r{^/(#{::Refinery::I18n.locales.keys.join('|')})(/|$)}
+          path.sub! %r(^/(([a-zA-Z\-_])*)(?=/|$)) do
+            ::I18n.locale = $1
+            ''
+          end
+          path.sub!(%r{^$}) { '/' }
+        else
+          ::I18n.locale = ::Refinery::I18n.default_frontend_locale
+        end
+      end
+
+      yield.tap do |params|
+        params[:locale] = ::I18n.locale if ::Refinery::I18n.enabled?
       end
     end
 
