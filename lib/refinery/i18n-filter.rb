@@ -10,7 +10,7 @@ module RoutingFilter
           end
           path.sub!(%r{^$}) { '/' }
         else
-          ::I18n.locale = ::Refinery::I18n.default_frontend_locale
+          ::I18n.locale = env["action_dispatch.request.path_parameters"][:locale] || ::Refinery::I18n.default_frontend_locale
         end
       end
 
